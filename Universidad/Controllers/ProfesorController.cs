@@ -86,6 +86,43 @@ namespace Universidad.Controllers
             return View(m);
         }
 
-       
+        public ActionResult Universidades(int? id)
+        {
+            var d = Universidad.Models.Manager.Instance.ObtenerDocente((int)id);
+            return View(d);
+        }
+        [HttpPost]
+
+        public ActionResult AgregarUniversidad(int idUniversidad, int idDocente)
+        {
+            var d = Universidad.Models.Manager.Instance.ObtenerDocente(idDocente);
+            var u = Universidad.Models.Manager.Instance.ObtenerUniversidad(idUniversidad);
+
+            if (!d.Universidades.Contains(u))
+            {
+                u.Docentes.Add(d);
+                d.Universidades.Add(u);
+                return RedirectToAction("Universidades", new { id = idDocente });
+            }
+            else
+            {
+                ViewBag.error = $"El {d.Nombre} ya trabaja en la universidad {u.Nombre}";
+            }
+            return View(d);
+        }
+
+        [HttpPost]
+        public ActionResult EliminarUniversidad(int idDocente, int idUniversidad)
+        {
+            var d = Universidad.Models.Manager.Instance.ObtenerDocente(idDocente);
+            var u = Universidad.Models.Manager.Instance.ObtenerUniversidad(idUniversidad);
+
+            d.Universidades.Remove(u);
+            u.Docentes.Remove(d);
+
+            return RedirectToAction("Universidades", new { id = idDocente });
+        }
+
+
     }
 }
