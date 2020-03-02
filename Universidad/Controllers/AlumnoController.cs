@@ -64,6 +64,38 @@ namespace Universidad.Controllers
 
             return View(a);
         }
-        
+
+        [HttpPost]
+        public ActionResult AgregarMaestrias(int idAlumno, int idMaestria)
+        {
+            var a = Universidad.Models.Manager.Instance.ObtenerEstudiante(idAlumno);
+            var m = Universidad.Models.Manager.Instance.ObtenerMaestria(idMaestria);
+
+            if (m != null)
+            {
+                if (!a.Maestrias.Contains(m))
+                {
+                    a.Maestrias.Add(m);
+                    return RedirectToAction("Maestrias", new { id = idAlumno });
+                }
+                else
+                {
+                    ViewBag.error = $"El estudiante{a.Nombre} con el CURP {a.CURP} ya se encuentra cursando la maestria {a.Maestrias}";
+                }
+            }
+            return View(a);
+        }
+
+        [HttpPost]
+        public ActionResult EliminarMaestria(int idAlumno, int idMaestria)
+        {
+            var a = Universidad.Models.Manager.Instance.ObtenerEstudiante(idAlumno);
+            var m = Universidad.Models.Manager.Instance.ObtenerMaestria(idMaestria);
+
+            a.Maestrias.Remove(m);
+
+            return RedirectToAction("Maestrias", new { id = idAlumno });
+        }
+
     }
 }

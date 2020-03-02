@@ -71,6 +71,40 @@ namespace Universidad.Controllers
             return View(maestria);
         }
 
-        
+        [HttpPost]
+        public ActionResult AgregarDocente(int idMaestria, int idDocente)
+        {
+            var m = Universidad.Models.Manager.Instance.ObtenerMaestria(idMaestria);
+            var d = Universidad.Models.Manager.Instance.ObtenerDocente(idDocente);
+            if (d != null)
+            {
+                if (!m.Docentes.Contains(d))
+                {
+                    m.Docentes.Add(d);
+                    d.Maestrias.Add(m);
+                    return RedirectToAction("Docentes", new { id = idMaestria });
+                }
+                else
+                {
+                    ViewBag.hasError = true;
+                    ViewBag.error = $"El docente {d.Nombre} ya imparte la maestría {m.Nombre}";
+                }
+            }
+            return View(m);
+        }
+
+        [HttpPost]
+        public ActionResult EliminarDocente(int idMaestria, int idDocente)
+        {
+            var m = Universidad.Models.Manager.Instance.ObtenerMaestria(idMaestria);
+            var d = Universidad.Models.Manager.Instance.ObtenerDocente(idDocente);
+
+            m.Docentes.Remove(d);
+            d.Maestrias.Remove(m);
+
+            return RedirectToAction("Docentes", new { id = idMaestria });
+        }
+
+
     }
 }
